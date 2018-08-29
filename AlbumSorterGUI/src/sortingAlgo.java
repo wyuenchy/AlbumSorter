@@ -24,17 +24,24 @@ public class sortingAlgo {
 	    return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
 	}
 	
+	static String artist(Tag tag){
+		String AA;
+		AA = tag.getFirst(FieldKey.ALBUM_ARTIST);
+		if(AA.equals("")) {
+			AA = tag.getFirst(FieldKey.ARTIST);
+		}
+		return AA;
+	}
+	
 	static void moveFolder(String target, String targetName,File audioFile,String dest) throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException {
-		//File audioFile = new File(target);
-		//System.out.println("imhere");
+
 		AudioFile f = AudioFileIO.read(audioFile);
 		Tag tag = f.getTag();
 		//String Album = tag.getFirst(FieldKey.ALBUM);
-		String AA = tag.getFirst(FieldKey.ALBUM_ARTIST);
-		System.out.println(AA);
+		String AA = artist(tag);
+		//System.out.println(AA);
 		Path toMove = Paths.get(dest+"/"+AA);
 		if(Files.exists(toMove)!= true) {
-			System.out.println("hello");
 			Files.createDirectories(toMove);
 		}
 		Files.move(Paths.get(target), Paths.get(dest+"/"+AA+"/"+targetName), StandardCopyOption.REPLACE_EXISTING);		
@@ -45,13 +52,13 @@ public class sortingAlgo {
 		AudioFile f = AudioFileIO.read(audioFile);
 		Tag tag = f.getTag();
 		String Album = tag.getFirst(FieldKey.ALBUM);
-		String AA = tag.getFirst(FieldKey.ALBUM_ARTIST);
+		String AA = artist(tag);
 		//System.out.println(AA);
 		Path toMove = Paths.get(dest+"/"+AA+" - "+Album);
 		if(Files.exists(toMove)!= true) {
 			Files.createDirectories(toMove);
 		}
-		Files.move(Paths.get(target), Paths.get(dest+"/"+AA+"/"+targetName), StandardCopyOption.REPLACE_EXISTING);		
+		Files.move(Paths.get(target), Paths.get(dest+"/"+AA+" - "+Album+"/"+targetName), StandardCopyOption.REPLACE_EXISTING);		
 	}
 	
 	public static void algo(String source, String dest) throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException {
@@ -89,7 +96,7 @@ public class sortingAlgo {
 					if(file2.isFile() && !thirdLayer){
 						//System.out.println(targetName);
 						System.out.println(ext(file2.getPath()));
-						if(ext(file2.getPath()).equals("flac")) {
+						if(ext(file2.getPath()).equals("flac")||ext(file2.getPath()).equals("m4a")||ext(file2.getPath()).equals("wav")) {
 							//System.out.println(target);
 							//System.out.println(targetName);
 							moveFolder(file.getPath(),file.getName(),file2,dest);
@@ -107,7 +114,7 @@ public class sortingAlgo {
 							for(File file3 : thirdList) {
 								targetName = file3.getName();
 								target = file3.getPath();
-								System.out.println(targetName);
+								//System.out.println(targetName);
 								if(file3.isFile()){
 									if(ext(file3.getPath()).equals("flac")) {
 										moveFolder(file.getPath(),file.getName(),file3,dest);
